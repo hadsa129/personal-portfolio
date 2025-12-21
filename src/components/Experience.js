@@ -1,122 +1,173 @@
 // src/components/Experience.js
-import { Container, Row, Col } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Container } from "react-bootstrap";
 import { motion } from "framer-motion";
-import { FaMapMarkerAlt, FaCalendarAlt, FaUserTie } from "react-icons/fa";
-import "animate.css";
+import { FaMapMarkerAlt, FaChevronRight, FaChartLine } from "react-icons/fa";
+import { SiPython, SiDjango, SiDocker, SiOpencv, SiHuggingface, SiGoogle } from "react-icons/si";
+import orangeLogo from "../assets/img/orange-logo.png";
+import atbLogo from "../assets/img/atb-logo.png";
+import artiLogo from "../assets/img/addminn-logo.webp";
+
+// Utiliser FaChartLine comme alternative à l'icône Power BI
+const SiPowerbi = FaChartLine;
 
 const experiences = [
   {
     id: 1,
-    role: "Data Engineer",
+    role: "Data Scientist Intern",
     company: "Orange Tunisia",
-    period: "Jan 2024 - Present",
+    period: "Feb 2025 - Aug 2025",
     location: "Tunis, Tunisia",
-    mentor: "Mentor: [Mentor Name]",
-    logo: "/images/orange-logo.png",
-    description: "Developing and maintaining data pipelines and analytics solutions.",
-    projects: [
-      "Built ETL pipelines processing 10M+ daily records using Databricks and Spark",
-      "Implemented real-time data processing with Apache Kafka and Spark Streaming",
-      "Designed and optimized Delta Lake architecture for efficient data storage",
-      "Created automated data quality checks reducing errors by 40%"
+    logo: orangeLogo,
+    videoDemo: "/videos/orange_compressed.mp4",
+    highlights: [
+      "Built churn prediction model with 90% recall and performed customer segmentation using K-Means clustering, achieving a Silhouette Score of 0.85",
+      "Leveraged Qwen 2.5 LLMs with advanced prompt engineering to generate personalized marketing content",
+      "Deployed a Django web application with real-time predictions, secure authentication, and Docker containerization for scalability"
     ],
-    tags: ["Databricks", "Spark", "Python", "SQL", "Airflow", "Kafka", "Delta Lake"]
+    technologies: ["Python", "Machine Learning", "Django", "Docker", "LLMs", "Prompt Engineering"]
   },
   {
     id: 2,
     role: "Data Scientist Intern",
-    company: "ATB Bank",
-    period: "Jun 2023 - Dec 2023",
+    company: "ATB (Arab Tunisian Bank)",
+    period: "Aug 2024 - Sep 2024",
     location: "Tunis, Tunisia",
-    mentor: "Mentor: [Mentor Name]",
-    logo: "/images/atb-logo.png",
-    description: "Developed machine learning models for financial data analysis.",
-    projects: [
-      "Built an OCR system for cheque processing with 92% accuracy",
-      "Implemented NLP models for document classification",
-      "Created interactive dashboards for data visualization",
-      "Automated data cleaning processes saving 15 hours/week"
+    logo: atbLogo,
+    videoDemo: "/videos/atb.mp4",
+    highlights: [
+      "Built an OCR-based cheque autocorrection system using KNN and NLP to detect and correct mismatches between digits and words, achieving 92% accuracy",
+      "Developed and deployed a Django web application with Power BI dashboards for real-time monitoring, reporting, and improved cheque validation efficiency"
     ],
-    tags: ["Python", "OpenCV", "Tesseract", "NLP", "Django", "Power BI"]
+    technologies: ["Python", "OpenCV", "Tesseract", "Django", "Power BI", "NLP"]
   },
   {
     id: 3,
-    role: "Machine Learning Intern",
-    company: "Vermeg",
-    period: "Feb 2023 - May 2023",
+    role: "Data Analyst Intern",
+    company: "Artibedded",
+    period: "Sep 2023 - Dec 2023",
     location: "Tunis, Tunisia",
-    mentor: "Mentor: [Mentor Name]",
-    logo: "/images/vermeg-logo.png",
-    description: "Worked on AI/ML solutions for financial services.",
-    projects: [
-      "Developed a document processing pipeline using computer vision",
-      "Implemented text extraction and classification models",
-      "Created a search engine for financial documents",
-      "Improved data processing speed by 30%"
+    logo: artiLogo,
+    highlights: [
+      "Collected and processed data from web scraping and LLM-driven pipelines, performing data cleaning, preprocessing, and feature engineering for analysis",
+      "Conducted exploratory data analysis (EDA) and created visualizations to derive actionable insights"
     ],
-    tags: ["Python", "TensorFlow", "OpenCV", "NLP", "Docker"]
+    technologies: ["Python", "Data Analysis", "Web Scraping", "LLMs", "Data Visualization"]
   }
 ];
 
 const ExperienceCard = ({ experience, index }) => {
-  return (
-    <motion.div
-      className="experience-card"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-    >
-      <div className="experience-timeline">
-        <div className="timeline-dot"></div>
-        {index !== experiences.length - 1 && <div className="timeline-line"></div>}
-      </div>
-      <div className="experience-content">
-        <div className="experience-header">
-          <div className="company-logo">
-            <img 
-              src={experience.logo} 
-              alt={experience.company}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://via.placeholder.com/60x60/0A0A0A/B5B88F?text=" + 
-                  experience.company.charAt(0).toUpperCase();
-              }}
-            />
-          </div>
-          <div className="experience-title">
-            <h3>{experience.role}</h3>
-            <h4>{experience.company}</h4>
-          </div>
-          <div className="experience-period">{experience.period}</div>
-        </div>
-        
-        <div className="experience-meta">
-          <div className="meta-item">
-            <FaMapMarkerAlt className="meta-icon" />
-            <span>{experience.location}</span>
-          </div>
-          <div className="meta-item">
-            <FaUserTie className="meta-icon" />
-            <span>{experience.mentor}</span>
-          </div>
-        </div>
+  const [showVideo, setShowVideo] = useState(false);
 
-        <p className="experience-description">{experience.description}</p>
-        
-        <div className="experience-projects">
-          <h5>Key Projects & Achievements:</h5>
-          <ul>
-            {experience.projects.map((project, i) => (
-              <li key={i}>{project}</li>
+  const getIcon = (tech) => {
+    const icons = {
+      'Python': <SiPython className="me-1" />,
+      'Django': <SiDjango className="me-1" />,
+      'Docker': <SiDocker className="me-1" />,
+      'Power BI': <SiPowerbi className="me-1" />,
+      'OpenCV': <SiOpencv className="me-1" />,
+      'Tesseract': <SiGoogle className="me-1" />,
+      'LLMs': <SiHuggingface className="me-1" />
+    };
+    return icons[tech] || <FaChevronRight className="me-1" size={10} />;
+  };
+
+  // Fonction pour obtenir le chemin correct de la vidéo
+  const getVideoPath = (videoPath) => {
+    if (!videoPath) return null;
+    if (videoPath.startsWith('http')) return videoPath;
+    return process.env.PUBLIC_URL + videoPath;
+  };
+
+  return (
+    <motion.div 
+      className="experience-card mb-4 p-4 rounded-4"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      viewport={{ once: true }}
+    >
+      <div className="d-flex flex-column flex-md-row">
+        <div className="me-md-4 mb-3 mb-md-0" style={{ minWidth: '80px' }}>
+          <img 
+            src={experience.logo} 
+            alt={experience.company} 
+            className="company-logo img-fluid"
+            style={{
+              width: '80px',
+              height: '80px',
+              objectFit: 'contain',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(0,0,0,0.1)',
+              padding: '10px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://via.placeholder.com/80/0A0A0A/FFFFFF?text=${experience.company.charAt(0)}`;
+            }}
+          />
+        </div>
+        <div className="flex-grow-1">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start mb-2">
+            <div>
+              <h4 className="mb-1 fw-bold">{experience.role}</h4>
+              <h5 className="mb-1 text-primary">{experience.company}</h5>
+            </div>
+            <div className="text-muted mt-2 mt-md-0">
+              <small>{experience.period}</small>
+              <div className="d-flex align-items-center mt-1">
+                <FaMapMarkerAlt className="me-1" size={12} />
+                <small>{experience.location}</small>
+              </div>
+            </div>
+          </div>
+          
+          <ul className="experience-highlights mt-3">
+            {experience.highlights.map((item, idx) => (
+              <li key={idx} className="mb-2 d-flex">
+                <span className="me-2 text-primary">•</span>
+                <span>{item}</span>
+              </li>
             ))}
           </ul>
-        </div>
-
-        <div className="experience-tags">
-          {experience.tags.map((tag, i) => (
-            <span key={i} className="tag">{tag}</span>
-          ))}
+          
+          <div className="d-flex flex-wrap gap-2 mb-3">
+            {experience.technologies.map((tech, idx) => (
+              <span key={idx} className="tech-badge">
+                {getIcon(tech)}
+                {tech}
+              </span>
+            ))}
+          </div>
+          
+          {experience.videoDemo && (
+            <div className="mt-3">
+              <button 
+                className="btn btn-outline-light btn-sm"
+                onClick={() => setShowVideo(!showVideo)}
+              >
+                {showVideo ? 'Masquer la démo' : 'Voir la démo vidéo'}
+              </button>
+              
+              {showVideo && (
+                <div className="mt-3 ratio ratio-16x9">
+                  <video 
+                    src={getVideoPath(experience.videoDemo)} 
+                    controls 
+                    className="rounded"
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'rgba(0,0,0,0.1)',
+                      border: '1px solid rgba(255,255,255,0.1)'
+                    }}
+                  >
+                    Votre navigateur ne prend pas en charge la lecture de vidéos.
+                  </video>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
@@ -125,28 +176,22 @@ const ExperienceCard = ({ experience, index }) => {
 
 const Experience = () => {
   return (
-    <section id="experience" className="experience-section">
+    <section id="experience" className="py-5 bg-light">
       <Container>
         <motion.div
-          className="section-header"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="text-center mb-5"
         >
           <h2 className="section-title">Professional Experience</h2>
-          <p className="section-subtitle">
-            My professional journey and the companies I've worked with
-          </p>
+          <p className="text-muted">My journey and contributions in the field of Data Science</p>
         </motion.div>
-
-        <div className="experience-timeline-container">
+        
+        <div className="experience-timeline">
           {experiences.map((exp, index) => (
-            <ExperienceCard 
-              key={exp.id} 
-              experience={exp} 
-              index={index} 
-            />
+            <ExperienceCard key={exp.id} experience={exp} index={index} />
           ))}
         </div>
       </Container>

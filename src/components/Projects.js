@@ -9,61 +9,76 @@ const projects = [
     title: "Client Data ETL Pipeline – Orange Tunisia",
     description: "Automated Lambda ETL pipelines on Databricks using Medallion architecture (Bronze/Silver/Gold). Processed high-volume telecom data and integrated into Snowflake for analytics, customer segmentation, and predictive modeling.",
     tools: ["Databricks", "Spark", "Delta Lake", "Snowflake", "Airflow", "Python", "ETL/ELT"],
-    image: "/images/etl-pipeline.jpg",
+    image: "/images/ETL_DBT.png",
     github: "#"
   },
   {
     title: "RAG Chatbot – Orange Tunisia",
     description: "Intelligent chatbot using RAG architecture with Qwen 2.5 LLM and ChromaDB for semantic retrieval from CSV data. Deployed via secure Django API with Docker.",
     tools: ["Qwen 2.5", "ChromaDB", "LangChain", "Django", "Docker", "FastAPI", "RAG"],
-    image: "/images/rag-chatbot.jpg",
-    github: "#"
-  },
-  {
-    title: "OCR Cheque Autocorrection System – ATB",
-    description: "NLP + KNN system to detect and correct mismatches between numeric and written amounts on bank cheques, achieving 92% accuracy. Integrated with a Django web application and Power BI dashboards.",
-    tools: ["OpenCV", "Tesseract", "KNN", "Django", "Power BI", "NLP"],
-    image: "/images/cheque-ocr.jpg",
+    image: "/images/chatbot.png",
     github: "#"
   },
   {
     title: "Social Media Mental Health Analyzer",
     description: "Containerized ETL pipeline ingesting Facebook and Twitter data into MongoDB. Performed NLP analysis for depression detection using zero-shot classification and sentiment models.",
     tools: ["Airflow", "MongoDB", "Hugging Face", "Transformers", "Docker", "NLP"],
-    image: "/images/mental-health.jpg",
-    github: "#"
+    image: "/images/FACEBOOK_DEPRESSION.png",
+    github: "https://github.com/hadsa129/Social-Media-Analysis-for-Depression-Detection"
   },
   {
     title: "Automated Attendance Tracking System",
     description: "CNN-based face detection and recognition system for automated attendance, achieving 88% real-time accuracy through image preprocessing and model optimization.",
     tools: ["TensorFlow", "OpenCV", "CNN", "Python", "Computer Vision"],
-    image: "/images/attendance-system.jpg",
+    image: "/images/attendance.png",
     github: "#"
+  },
+  {
+    title: "Data Engineering Pipeline – dbt & Snowflake",
+    description: "Orchestrated ELT pipelines transforming TPCH raw data into analytics-ready models with dbt, loaded into Snowflake for scalable, reliable data delivery. Implemented data quality tests, documentation, and incremental models for efficient processing.",
+    tools: ["dbt", "Snowflake", "Airflow", "SQL", "Data Modeling", "ETL/ELT"],
+    image: "/images/ETL_DBT.png",
+    github: "https://github.com/hadsa129/Data-Engineering-Pipeline-with-dbt-Snowflake-and-Airflow"
   },
   {
     title: "Credit Card Fraud Detection",
     description: "Built and optimized an end-to-end ML pipeline for fraud detection, performing data preprocessing, feature engineering, and model evaluation to reach 87% accuracy.",
     tools: ["Scikit-learn", "Pandas", "NumPy", "Matplotlib", "Machine Learning"],
-    image: "/images/fraud-detection.jpg",
+    image: "/images/fraud.png",
     github: "#"
   },
   {
     title: "London Bike Sharing Analysis",
     description: "Cleaned and analyzed Kaggle bike share dataset, creating interactive Tableau dashboards showing ridership trends by weather, hour, and season.",
     tools: ["Tableau", "Pandas", "Data Visualization", "EDA"],
-    image: "/images/bike-sharing.jpg",
-    github: "#"
+    image: "/images/bike-dashboard.png",
+    github: "https://github.com/hadsa129/London-Bike-Sharing-Data-Analysis-/tree/main"
   },
   {
     title: "Laptops Product Sales Analysis",
     description: "Implemented ETL processes to clean and structure sales data in SQL Server. Created Power BI dashboards with KPIs, charts, and slicers to track revenue, profit, and sales trends.",
     tools: ["Power BI", "SQL Server", "ETL", "Data Visualization"],
-    image: "/images/sales-analysis.jpg",
+    image: "/images/laptop.png",
+    github: "#"
+  },
+  {
+    title: "Coffee Bean Sales Analysis",
+    description: "Processed and merged sales data, creating calculated fields and performing advanced data cleaning. Developed interactive dashboards and Pivot Tables to analyze orders, customer behavior, and product performance for actionable insights.",
+    tools: ["Excel", "Pivot Tables", "Data Visualization", "Data Analysis"],
+    image: "/images/coffee.png",
     github: "#"
   }
 ];
 
 const ProjectCard = ({ project, index }) => {
+  // Fonction pour obtenir l'image correcte selon l'environnement
+  const getImagePath = (imgPath) => {
+    // Si c'est une URL complète, on la retourne telle quelle
+    if (imgPath.startsWith('http')) return imgPath;
+    // Sinon, on suppose que c'est un chemin relatif dans le dossier public
+    return process.env.PUBLIC_URL + imgPath;
+  };
+
   return (
     <Col lg={6} className="mb-5" key={index}>
       <motion.div
@@ -75,23 +90,44 @@ const ProjectCard = ({ project, index }) => {
       >
         <div className="project-image">
           <img 
-            src={project.image} 
-            alt={project.title} 
+            src={getImagePath(project.image)} 
+            alt={project.title}
+            className="img-fluid"
+            style={{
+              width: '100%',
+              height: '250px',
+              objectFit: 'cover',
+              borderRadius: '8px 8px 0 0'
+            }}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "https://via.placeholder.com/600x400/0A0A0A/B5B88F?text=" + encodeURIComponent(project.title);
+              e.target.src = `https://via.placeholder.com/600x400/1a1a1a/D4BC9E?text=${encodeURIComponent(project.title)}`;
             }}
           />
           <div className="project-overlay">
             <div className="project-links">
               {project.github && project.github !== "#" && (
-                <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-link" title="View on GitHub">
+                <a 
+                  href={project.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="project-link" 
+                  title="View on GitHub"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <FaGithub />
                   <span>GitHub</span>
                 </a>
               )}
               {project.demo && project.demo !== "#" ? (
-                <a href={project.demo} target="_blank" rel="noopener noreferrer" className="project-link" title="View Live Demo">
+                <a 
+                  href={project.demo} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="project-link" 
+                  title="View Live Demo"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <FaExternalLinkAlt />
                   <span>Live Demo</span>
                 </a>

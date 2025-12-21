@@ -1,108 +1,88 @@
+import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { useState, useEffect } from "react";
-import logo from "../assets/img/logo.svg";
-import navIcon1 from "../assets/img/nav-icon1.svg";
-import navIcon2 from "../assets/img/nav-icon2.svg";
-import navIcon3 from "../assets/img/nav-icon3.svg";
+import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
+import { Link } from "react-scroll";
 
-const NavBar = () => {
+const NavBar = ({ scrolled }) => {
+  const [expanded, setExpanded] = useState(false);
   const [activeLink, setActiveLink] = useState("home");
-  const [scrolled, setScrolled] = useState(false);
 
-  const onscroll = () => {
-    if (window.scrollY > 50) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
+  const closeNavbar = () => {
+    setExpanded(false);
   };
 
-  useEffect(() => {
-    if (window.scrollY > 50) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
-
-    window.addEventListener("scroll", onscroll);
-
-    return () => window.removeEventListener("scroll", onscroll);
-  }, []);
-
-  const onUpdateActiveLink = (value) => {
-    setActiveLink(value);
+  const handleSetActive = (to) => {
+    setActiveLink(to);
   };
+
+  const navLinks = [
+    { to: "home", label: "Home" },
+    { to: "skills", label: "Skills" },
+    { to: "projects", label: "Projects" },
+    { to: "experience", label: "Experience" },
+    { to: "resumes", label: "Resumes" },
+    { to: "contact", label: "Contact" },
+  ];
+
+  const socialIcons = [
+    { icon: <FaGithub />, url: "https://github.com/hadsa129" },
+    { icon: <FaLinkedin />, url: "https://linkedin.com/in/hadil-sahraoui/" },
+    { icon: <FaEnvelope />, url: "mailto:hadil.sahraoui129@gmail.com" },
+  ];
 
   return (
-    <Navbar expand="lg" className={scrolled ? "scrolled" : ""}>
+    <Navbar 
+      expand="lg" 
+      className={scrolled ? "scrolled" : ""}
+      expanded={expanded}
+      onToggle={() => setExpanded(!expanded)}
+    >
       <Container>
-        <Navbar.Brand href="#home">
-          <img src={logo} alt="logo" />
+        <Navbar.Brand href="#home" className="d-flex align-items-center">
+          <span>HS</span>
         </Navbar.Brand>
+        
         <Navbar.Toggle aria-controls="basic-navbar-nav">
           <span className="navbar-toggler-icon"></span>
         </Navbar.Toggle>
+        
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link
-              href="#home"
-              className={
-                activeLink === "home" ? "active navbar-link" : "navbar-link"
-              }
-              onClick={() => onUpdateActiveLink("home")}
-            >
-              Home
-            </Nav.Link>
-            <Nav.Link
-              href="#skills"
-              className={
-                activeLink === "skills" ? "active navbar-link" : "navbar-link"
-              }
-              onClick={() => onUpdateActiveLink("skills")}
-            >
-              Skills
-            </Nav.Link>
-            <Nav.Link
-              href="#projects"
-              className={
-                activeLink === "projects" ? "active navbar-link" : "navbar-link"
-              }
-              onClick={() => onUpdateActiveLink("projects")}
-            >
-              Projects
-            </Nav.Link>
-            <Nav.Link
-              href="#experience"
-              className={
-                activeLink === "experience" ? "active navbar-link" : "navbar-link"
-              }
-              onClick={() => onUpdateActiveLink("experience")}
-            >
-              Experience
-            </Nav.Link>
-            <Nav.Link href="#resume">Resume</Nav.Link>
+            {navLinks.map((link) => (
+              <Nav.Link
+                key={link.to}
+                as={Link}
+                to={link.to}
+                spy={true}
+                smooth={true}
+                offset={-80}
+                duration={500}
+                className={`${activeLink === link.to ? 'active' : ''}`}
+                onSetActive={() => handleSetActive(link.to)}
+                onClick={closeNavbar}
+              >
+                {link.label}
+              </Nav.Link>
+            ))}
           </Nav>
-          <span className="navbar-text">
+          
+          <div className="d-flex align-items-center">
             <div className="social-icon">
-              <a href="URL">
-                <img src={navIcon1} alt="" />
-              </a>
-              <a href="https://www.facebook.com/">
-                <img src={navIcon2} alt="" />
-              </a>
-              <a href="https://www.instagram.com/">
-                <img src={navIcon3} alt="" />
-              </a>
+              {socialIcons.map((social, index) => (
+                <a 
+                  key={index} 
+                  href={social.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label={social.url.split('/')[2]}
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
-            <button
-              className="vvd"
-              onClick={() => (window.location.href = "URL")}
-            >
-              <span>Let's connect</span>
-            </button>
-          </span>
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>

@@ -1,4 +1,5 @@
-import { Col, Container, Row } from "react-bootstrap";
+import React from 'react';
+import { Container, Row, Col } from "react-bootstrap";
 import logo from "../assets/img/logo.svg";
 import navIcon1 from "../assets/img/nav-icon1.svg";
 import navIcon2 from "../assets/img/nav-icon2.svg";
@@ -9,22 +10,20 @@ const Footer = () => {
     <footer className="footer">
       <Container>
         <Row className="footer-row align-items-end">
-          <Col sm={5}>
-            <img src={logo} alt="Logo" />
-          </Col>
+          
           <Col sm={7} className="text-center text-sm-end">
             <div className="social-icon">
-              <a href="URL">
-                <img src={navIcon1} />
+              <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
+                <img src={navIcon1} alt="LinkedIn" />
               </a>
-              <a href="https://www.facebook.com/">
-                <img src={navIcon2} />
+              <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                <img src={navIcon2} alt="Facebook" />
               </a>
-              <a href="https://www.instagram.com/">
-                <img src={navIcon3} />
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                <img src={navIcon3} alt="Instagram" />
               </a>
             </div>
-            <p>&copy; 2023 TheCodingTrio. All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} TheCodingTrio. All Rights Reserved.</p>
           </Col>
         </Row>
       </Container>

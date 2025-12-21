@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { FaPython, FaGithub,  FaDocker,  FaAws } from 'react-icons/fa';
-import { SiApachespark, SiDatabricks, SiApachekafka, SiAirflow, SiSnowflake, SiMicrosoftazure, SiPowerbi, SiTableau, SiTensorflow, SiPytorch, SiHuggingface, SiFastapi, SiDjango, SiPostgresql, SiMongodb, SiMysql, SiMicrosoftsqlserver } from 'react-icons/si';
+import { SiApachespark, SiDatabricks, SiApachekafka, SiSnowflake, SiTableau, SiTensorflow, SiPytorch, SiHuggingface, SiFastapi, SiDjango, SiPostgresql, SiMongodb, SiMysql } from 'react-icons/si';
 import { DiScrum } from 'react-icons/di';
 
 const skillsData = [

@@ -1,6 +1,5 @@
 import { Col, Container, Row } from "react-bootstrap";
 import { ArrowRightCircle } from "react-bootstrap-icons";
-import logo from "../assets/img/logo.svg";
 import atom from "../assets/img/atom.png";
 import { useEffect, useState } from "react";
 import "animate.css";
