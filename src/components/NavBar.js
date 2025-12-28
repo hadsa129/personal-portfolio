@@ -22,6 +22,7 @@ const NavBar = ({ scrolled }) => {
     { to: "skills", label: "Skills" },
     { to: "projects", label: "Projects" },
     { to: "experience", label: "Experience" },
+    { to: "learning-path", label: "Learning Path" },
     { to: "resumes", label: "Resumes" },
     { to: "contact", label: "Contact" },
   ];

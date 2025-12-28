@@ -11,6 +11,7 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Experience from './components/Experience';
 import Resumes from './components/Resumes';
+import LearningPath from './components/LearningPath';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -21,10 +22,16 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    let timer;
+    
+    // Fonction pour gérer le chargement
+    const handleLoad = () => {
+      timer = setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    };
 
+    // Fonction pour gérer le défilement
     const handleScroll = () => {
       const isScrolled = window.scrollY > 50;
       if (isScrolled !== scrolled) {
@@ -32,15 +39,41 @@ function App() {
       }
     };
 
+    // Vérifier si le contenu est déjà chargé
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+    }
+    
+    // Ajouter l'écouteur de défilement
     window.addEventListener('scroll', handleScroll);
+    
+    // Nettoyage
     return () => {
       clearTimeout(timer);
+      window.removeEventListener('load', handleLoad);
       window.removeEventListener('scroll', handleScroll);
     };
   }, [scrolled]);
 
   if (loading) {
-    return <Loader />;
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#121212',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
   }
 
   return (
@@ -66,6 +99,9 @@ function App() {
           </Element>
           <Element name="resumes">
             <Resumes />
+          </Element>
+          <Element name="learning-path">
+            <LearningPath />
           </Element>
           <Element name="contact">
             <Contact />
