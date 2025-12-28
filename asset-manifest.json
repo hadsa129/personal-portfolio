@@ -1,27 +1,27 @@
 {
   "files": {
-    "main.css": "./static/css/main.d4680e43.css",
-    "main.js": "./static/js/main.a2418197.js",
-    "static/js/488.2f6294a6.chunk.js": "./static/js/488.2f6294a6.chunk.js",
-    "static/media/banner1.jpg": "./static/media/banner1.dc3f2735ac8195fb0d0a.jpg",
-    "static/media/profile_image.JPG": "./static/media/profile_image.14bb289d22a60b267c02.JPG",
-    "static/media/atb-logo.png": "./static/media/atb-logo.1188a4c5913f009d118d.png",
-    "static/media/CentraNo2-Bold.ttf": "./static/media/CentraNo2-Bold.2faff7f7d3fc92a2fcd9.ttf",
-    "static/media/CentraNo2-Medium.ttf": "./static/media/CentraNo2-Medium.f94be5b326d78bb32b95.ttf",
-    "static/media/CentraNo2-Book.ttf": "./static/media/CentraNo2-Book.2b143fa4b734a3584043.ttf",
-    "static/media/footer-bg.png": "./static/media/footer-bg.7bd67c0f73571d0acc02.png",
-    "static/media/logo.svg": "./static/media/logo.c6e1cec926bfe45ea1fa39ef1863a116.svg",
-    "static/media/addminn-logo.webp": "./static/media/addminn-logo.8f40509bea6e3ef1ad49.webp",
-    "static/media/nav-icon3.svg": "./static/media/nav-icon3.72cef43bc93b04f52e29f022ef720f8b.svg",
-    "index.html": "./index.html",
-    "static/media/nav-icon1.svg": "./static/media/nav-icon1.dff40ae802524d8fc0cbce3f312abe4f.svg",
-    "static/media/nav-icon2.svg": "./static/media/nav-icon2.a39f0e5e47e442dafcc5c9c320f19f6f.svg",
-    "main.d4680e43.css.map": "./static/css/main.d4680e43.css.map",
-    "main.a2418197.js.map": "./static/js/main.a2418197.js.map",
-    "488.2f6294a6.chunk.js.map": "./static/js/488.2f6294a6.chunk.js.map"
+    "main.css": "/personal-portfolio/static/css/main.840e04af.css",
+    "main.js": "/personal-portfolio/static/js/main.060b81aa.js",
+    "static/js/488.2f6294a6.chunk.js": "/personal-portfolio/static/js/488.2f6294a6.chunk.js",
+    "static/media/banner1.jpg": "/personal-portfolio/static/media/banner1.dc3f2735ac8195fb0d0a.jpg",
+    "static/media/profile_image.JPG": "/personal-portfolio/static/media/profile_image.14bb289d22a60b267c02.JPG",
+    "static/media/atb-logo.png": "/personal-portfolio/static/media/atb-logo.1188a4c5913f009d118d.png",
+    "static/media/CentraNo2-Bold.ttf": "/personal-portfolio/static/media/CentraNo2-Bold.2faff7f7d3fc92a2fcd9.ttf",
+    "static/media/CentraNo2-Medium.ttf": "/personal-portfolio/static/media/CentraNo2-Medium.f94be5b326d78bb32b95.ttf",
+    "static/media/CentraNo2-Book.ttf": "/personal-portfolio/static/media/CentraNo2-Book.2b143fa4b734a3584043.ttf",
+    "static/media/footer-bg.png": "/personal-portfolio/static/media/footer-bg.7bd67c0f73571d0acc02.png",
+    "static/media/logo.svg": "/personal-portfolio/static/media/logo.c6e1cec926bfe45ea1fa39ef1863a116.svg",
+    "static/media/addminn-logo.webp": "/personal-portfolio/static/media/addminn-logo.8f40509bea6e3ef1ad49.webp",
+    "static/media/nav-icon3.svg": "/personal-portfolio/static/media/nav-icon3.72cef43bc93b04f52e29f022ef720f8b.svg",
+    "index.html": "/personal-portfolio/index.html",
+    "static/media/nav-icon1.svg": "/personal-portfolio/static/media/nav-icon1.dff40ae802524d8fc0cbce3f312abe4f.svg",
+    "static/media/nav-icon2.svg": "/personal-portfolio/static/media/nav-icon2.a39f0e5e47e442dafcc5c9c320f19f6f.svg",
+    "main.840e04af.css.map": "/personal-portfolio/static/css/main.840e04af.css.map",
+    "main.060b81aa.js.map": "/personal-portfolio/static/js/main.060b81aa.js.map",
+    "488.2f6294a6.chunk.js.map": "/personal-portfolio/static/js/488.2f6294a6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d4680e43.css",
-    "static/js/main.a2418197.js"
+    "static/css/main.840e04af.css",
+    "static/js/main.060b81aa.js"
   ]
 }
