@@ -111,10 +111,10 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router basename="/personal-portfolio">
       <div className="App">
         <Routes>
-          <Route path="/personal-portfolio" element={
+          <Route path="/" element={
             <>
               <ScrollToSection />
               <AppContent />

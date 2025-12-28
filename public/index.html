@@ -18,5 +18,21 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      // Gestion de la navigation SPA pour GitHub Pages
+      (function() {
+        // Ne rien faire si on est en développement
+        if (window.location.hostname === 'localhost') return;
+        
+        // Vérifier si on est sur la page 404 de GitHub
+        if (document.querySelector('body > div.container')) {
+          const path = window.location.pathname;
+          const base = '/personal-portfolio';
+          const newPath = path.startsWith(base) ? path : base + path;
+          window.history.replaceState({}, '', newPath + window.location.search + window.location.hash);
+          window.location.reload();
+        }
+      })();
+    </script>
   </body>
 </html>
