@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Tabs, Tab, Spinner } from 'react-bootstrap';
 import { motion } from 'framer-motion';
-import { FaFilePdf, FaDownload, FaExternalLinkAlt, FaTimes, FaChevronLeft, FaChevronRight, FaExpand } from 'react-icons/fa';
+import { FaFilePdf, FaDownload, FaTimes, FaChevronLeft, FaChevronRight, FaExpand } from 'react-icons/fa';
 import * as pdfjsLib from 'pdfjs-dist';
 import 'pdfjs-dist/build/pdf.worker.entry';
 
@@ -33,26 +33,26 @@ const Resumes = () => {
     }
   };
 
-  const resumes = {
+  const resumes = React.useMemo(() => ({
     dataScientist: {
       title: 'Data Scientist',
       file: 'data_scientist_resume.pdf',
-      preview: getPreviewPath('/images/resumes/data_scientist_preview.jpg'),
+      preview: getPreviewPath('/images/resumes/data_scientist_preview.png'),
       description: 'Expertise in machine learning, deep learning, and statistical modeling. Proficient in Python, TensorFlow, and data visualization.'
     },
     dataEngineer: {
       title: 'Data Engineer',
       file: 'data_engineer_resume.pdf',
-      preview: getPreviewPath('/images/resumes/data_engineer_preview.jpg'),
+      preview: getPreviewPath('/images/resumes/data_engineer_preview.png'),
       description: 'Specialized in building scalable data pipelines, ETL processes, and data infrastructure using tools like Spark, Airflow, and cloud platforms.'
     },
     dataAnalyst: {
       title: 'Data Analyst',
       file: 'data_analyst_role.pdf',
-      preview: getPreviewPath('/images/resumes/data_analyst_preview.jpg'),
+      preview: getPreviewPath('/images/resumes/data_analyst_preview.png'),
       description: 'Skilled in data visualization, business intelligence, and data-driven decision making. Proficient in SQL, Tableau, and statistical analysis.'
     }
-  };
+  }), []); // Added empty dependency array since getPreviewPath is stable
 
   // Function to render PDF page
   const renderPdf = async (pdfDoc, pageNum) => {
@@ -119,7 +119,7 @@ const Resumes = () => {
         currentPdf.destroy();
       }
     };
-  }, [activeTab, resumes]);
+  }, [activeTab, resumes]); // Added resumes to the dependency array
   
   // Handle page navigation
   const goToPrevPage = async () => {

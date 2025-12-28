@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaEnvelope, FaArrowDown } from 'react-icons/fa';
-import profileImage from '../assets/img/profile_image.JPG';
+import profileImage from '../assets/img/profile-image.JPG';
 
 const Hero = () => {
   return (

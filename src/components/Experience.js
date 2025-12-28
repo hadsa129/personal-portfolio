@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Container } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaChevronRight, FaChartLine } from "react-icons/fa";
-import { SiPython, SiDjango, SiDocker, SiOpencv, SiHuggingface, SiGoogle } from "react-icons/si";
+import { SiPython, SiDjango, SiDocker, SiOpencv, SiGoogle } from "react-icons/si";
+import { FaBrain } from "react-icons/fa";  // Alternative à SiHuggingface
 import orangeLogo from "../assets/img/orange-logo.png";
 import atbLogo from "../assets/img/atb-logo.png";
 import artiLogo from "../assets/img/addminn-logo.webp";
@@ -67,7 +68,7 @@ const ExperienceCard = ({ experience, index }) => {
       'Power BI': <SiPowerbi className="me-1" />,
       'OpenCV': <SiOpencv className="me-1" />,
       'Tesseract': <SiGoogle className="me-1" />,
-      'LLMs': <SiHuggingface className="me-1" />
+      'LLMs': <FaBrain className="me-1" />
     };
     return icons[tech] || <FaChevronRight className="me-1" size={10} />;
   };
@@ -109,7 +110,7 @@ const ExperienceCard = ({ experience, index }) => {
           />
         </div>
         <div className="flex-grow-1">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start mb-2">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
             <div>
               <h4 className="mb-1 fw-bold">{experience.role}</h4>
               <h5 className="mb-1 text-primary">{experience.company}</h5>
@@ -142,7 +143,7 @@ const ExperienceCard = ({ experience, index }) => {
           </div>
           
           {experience.videoDemo && (
-            <div className="mt-3">
+            <div className="mt-4 mb-3">
               <button 
                 className="btn btn-outline-light btn-sm"
                 onClick={() => setShowVideo(!showVideo)}
@@ -151,15 +152,17 @@ const ExperienceCard = ({ experience, index }) => {
               </button>
               
               {showVideo && (
-                <div className="mt-3 ratio ratio-16x9">
+                <div className="mt-3 ratio ratio-16x9 rounded overflow-hidden" style={{
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                border: '1px solid rgba(255,255,255,0.1)'
+              }}>
                   <video 
                     src={getVideoPath(experience.videoDemo)} 
                     controls 
                     className="rounded"
                     style={{
                       width: '100%',
-                      backgroundColor: 'rgba(0,0,0,0.1)',
-                      border: '1px solid rgba(255,255,255,0.1)'
+                      backgroundColor: 'rgba(0,0,0,0.05)'
                     }}
                   >
                     Votre navigateur ne prend pas en charge la lecture de vidéos.

@@ -1,24 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
-import { Link } from "react-scroll";
 
 const NavBar = ({ scrolled }) => {
   const [expanded, setExpanded] = useState(false);
+  const location = useLocation();
   const [activeLink, setActiveLink] = useState("home");
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -80; // Ajustez cette valeur en fonction de la hauteur de votre barre de navigation
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    // Mettre à jour le lien actif basé sur l'URL actuelle
+    const path = location.pathname.substring(1) || 'home';
+    setActiveLink(path);
+    
+    // Faire défiler jusqu'à la section correspondante après un court délai
+    const timer = setTimeout(() => {
+      scrollToSection(path);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [location]);
 
   const closeNavbar = () => {
     setExpanded(false);
   };
 
-  const handleSetActive = (to) => {
-    setActiveLink(to);
-  };
-
   const navLinks = [
-    { to: "home", label: "Home" },
+    { to: "", label: "Home" },
     { to: "skills", label: "Skills" },
     { to: "projects", label: "Projects" },
     { to: "experience", label: "Experience" },
@@ -52,20 +71,17 @@ const NavBar = ({ scrolled }) => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {navLinks.map((link) => (
-              <Nav.Link
-                key={link.to}
-                as={Link}
-                to={link.to}
-                spy={true}
-                smooth={true}
-                offset={-80}
-                duration={500}
-                className={`${activeLink === link.to ? 'active' : ''}`}
-                onSetActive={() => handleSetActive(link.to)}
-                onClick={closeNavbar}
-              >
-                {link.label}
-              </Nav.Link>
+                <Link
+                  key={link.to}
+                  to={`/${link.to}`}
+                  className={`nav-link ${activeLink === (link.to || 'home') ? 'active' : ''}`}
+                  onClick={() => {
+                    closeNavbar();
+                    setActiveLink(link.to || 'home');
+                  }}
+                >
+                  {link.label}
+                </Link>
             ))}
           </Nav>
           

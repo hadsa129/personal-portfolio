@@ -23,13 +23,24 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-boundary" role="alert">
+        <div className="error-boundary" role="alert" style={{
+          padding: '20px',
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          borderRadius: '4px',
+          margin: '20px',
+          border: '1px solid #f5c6cb'
+        }}>
           <h2>Something went wrong.</h2>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
+          {this.state.error && (
+            <p>{this.state.error.toString()}</p>
+          )}
+          {this.state.errorInfo?.componentStack && (
+            <details style={{ whiteSpace: 'pre-wrap' }}>
+              <summary>Component Stack Trace</summary>
+              {this.state.errorInfo.componentStack}
+            </details>
+          )}
         </div>
       );
     }

@@ -31,9 +31,12 @@ body {
   font-weight: 400;
   overflow-x: hidden;
   position: relative;
-  background-color: #121212 !important; /*we put important becuz sometimes bootstrap styling overrides our styling*/
-  color: #fff !important; /*This is the text color*/
+  background-color: #121212 !important;
+  color: #fff !important;
   font-family: "Centra", sans-serif !important;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
