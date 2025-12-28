@@ -4,8 +4,8 @@ import { Container, Row, Col, Card, Accordion, Button } from 'react-bootstrap';
 import { FaGithub, FaArrowRight } from 'react-icons/fa';
 import './LearningPath.css';
 
-// Using a placeholder image URL for the roadmap
-const roadmapGif = 'https://via.placeholder.com/800x600/1a1a1a/D4BC9E?text=Learning+Roadmap+Placeholder';
+// Local image for the roadmap
+const roadmapGif = `${process.env.PUBLIC_URL}/images/learning-roadmap.jpg`;
 
 const LearningPath = () => {
   const pillars = [
@@ -95,56 +95,55 @@ const LearningPath = () => {
     <Element name="learning-path">
       <section className="learning-path-section">
         <Container>
-          <div className="section-title">
+          <div className="section-title text-center mb-5">
+            <span className="badge bg-primary mb-3">Learning Resource</span>
             <h2>Data Science Learning Path</h2>
-            <p>From Zero to AI: A Comprehensive Roadmap</p>
-            
-            <div className="github-badge">
-              <a 
-                href="https://github.com/hadsa129/data-science-learning-path" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="github-button"
-              >
-                <FaGithub /> Star on GitHub
-              </a>
-            </div>
+            <p className="lead">From Zero to AI: A Structured Journey</p>
           </div>
           
-          <div className="roadmap-preview">
-            <div className="roadmap-description">
-              <h3>Your Journey to Data Science Mastery</h3>
-              <p>This comprehensive learning path is designed to take you from absolute beginner to AI practitioner through hands-on projects and real-world applications. Each module builds upon the previous one, ensuring a solid foundation before moving to advanced topics.</p>
-              
-              <div className="key-features">
-                <h4>What You'll Learn:</h4>
-                <ul>
-                  <li>Core mathematical concepts powering modern AI</li>
-                  <li>Data manipulation and visualization with Python</li>
-                  <li>Machine learning algorithms and model deployment</li>
-                  <li>Deep learning and neural networks</li>
-                  <li>Real-world project experience</li>
-                </ul>
+          <Row className="align-items-center mb-5">
+            <Col lg={6} className="mb-4 mb-lg-0">
+              <div className="roadmap-preview mb-4">
+                <img 
+                  src={roadmapGif} 
+                  alt="Data Science Learning Roadmap" 
+                  className="img-fluid rounded shadow"
+                />
               </div>
-              
-              <a 
-                href="https://github.com/hadsa129/data-science-learning-path" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn btn-primary explore-button"
-              >
-                Explore Full Curriculum <FaArrowRight className="ms-2" />
-              </a>
-            </div>
-            
-            <div className="roadmap-gif">
-              <img 
-                src={roadmapGif} 
-                alt="Data Science Learning Path Roadmap" 
-                className="img-fluid rounded shadow"
-              />
-            </div>
-          </div>
+              <div className="text-center">
+                <a 
+                  href="https://github.com/hadsa129/data-science-learning-path" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                >
+                  Explore Full Curriculum <FaArrowRight className="ms-2" />
+                </a>
+              </div>
+            </Col>
+            <Col lg={6}>
+              <div className="learning-path-highlights p-4">
+                <h3 className="h4 mb-4">What You'll Learn</h3>
+                <ul className="list-unstyled">
+                  <li className="mb-3">
+                    <strong>✓ Core Concepts:</strong> Python, NumPy, Pandas, Data Visualization
+                  </li>
+                  <li className="mb-3">
+                    <strong>✓ Machine Learning:</strong> Algorithms, model evaluation, deployment
+                  </li>
+                  <li className="mb-3">
+                    <strong>✓ Deep Learning:</strong> Neural networks, CNNs, NLP
+                  </li>
+                  <li className="mb-3">
+                    <strong>✓ Real Projects:</strong> Hands-on experience with real datasets
+                  </li>
+                </ul>
+                <p className="mt-4">
+                  This comprehensive path includes Jupyter notebooks, PDF resources, and practical exercises to help you master data science through hands-on learning.
+                </p>
+              </div>
+            </Col>
+          </Row>
           
 
           <Row className="justify-content-center">
@@ -172,18 +171,30 @@ const LearningPath = () => {
             </Col>
           </Row>
 
-          <div className="cta-section text-center mt-5">
-            <h3>Ready to Start Your Data Science Journey?</h3>
-            <p className="mb-4">Access all learning materials, code examples, and project files on GitHub</p>
-            <a 
-              href="https://github.com/hadsa129/data-science-learning-path" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="btn btn-primary btn-lg github-cta"
-            >
-              <FaGithub className="me-2" /> View on GitHub
-            </a>
-            <p className="mt-3 text-muted">
+          <div className="cta-section text-center py-5 mt-5 bg-light rounded">
+            <h3 className="mb-4">Ready to Start Your Data Science Journey?</h3>
+            <p className="lead mb-4">Access all learning materials, code examples, and project files on GitHub</p>
+            <div className="d-flex justify-content-center gap-3">
+              <Button 
+                href="https://github.com/hadsa129/data-science-learning-path" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                variant="primary"
+                size="lg"
+                className="px-4"
+              >
+                <FaGithub className="me-2" /> View on GitHub
+              </Button>
+              <Button 
+                href="#learning-path"
+                variant="outline-primary"
+                size="lg"
+                className="px-4"
+              >
+                Explore Curriculum
+              </Button>
+            </div>
+            <p className="mt-3 text-muted mb-0">
               <small>MIT Licensed • Open Source • Community Driven</small>
             </p>
           </div>

@@ -18,23 +18,38 @@ const Resumes = () => {
   const canvasRef = useRef(null);
   const modalRef = useRef(null);
 
+  const getResumePath = (filename) => {
+    // Use the public URL to ensure correct path in both dev and production
+    return `${process.env.PUBLIC_URL}/resumes/${filename}`;
+  };
+
+  const getPreviewPath = (previewPath) => {
+    // Handle preview images with fallback
+    try {
+      return require(`../public${previewPath}`);
+    } catch (e) {
+      // Fallback to a placeholder if the image doesn't exist
+      return `${process.env.PUBLIC_URL}/images/placeholder-resume.jpg`;
+    }
+  };
+
   const resumes = {
     dataScientist: {
       title: 'Data Scientist',
-      file: '/resumes/data_scientist_resume.pdf',
-      preview: '/images/resumes/data_scientist_preview.jpg',
+      file: 'data_scientist_resume.pdf',
+      preview: getPreviewPath('/images/resumes/data_scientist_preview.jpg'),
       description: 'Expertise in machine learning, deep learning, and statistical modeling. Proficient in Python, TensorFlow, and data visualization.'
     },
     dataEngineer: {
       title: 'Data Engineer',
-      file: '/resumes/data_engineer_resume.pdf',
-      preview: '/images/resumes/data_engineer_preview.jpg',
+      file: 'data_engineer_resume.pdf',
+      preview: getPreviewPath('/images/resumes/data_engineer_preview.jpg'),
       description: 'Specialized in building scalable data pipelines, ETL processes, and data infrastructure using tools like Spark, Airflow, and cloud platforms.'
     },
     dataAnalyst: {
       title: 'Data Analyst',
-      file: '/resumes/data_analyst_role.pdf',
-      preview: '/images/resumes/data_analyst_preview.jpg',
+      file: 'data_analyst_role.pdf',
+      preview: getPreviewPath('/images/resumes/data_analyst_preview.jpg'),
       description: 'Skilled in data visualization, business intelligence, and data-driven decision making. Proficient in SQL, Tableau, and statistical analysis.'
     }
   };
@@ -63,6 +78,9 @@ const Resumes = () => {
 
   // Load PDF when active tab changes
   useEffect(() => {
+    let currentPdf = null;
+    let isMounted = true;
+
     const loadPdf = async () => {
       if (!resumes[activeTab]) return;
       
@@ -70,7 +88,14 @@ const Resumes = () => {
       try {
         const loadingTask = pdfjsLib.getDocument(resumes[activeTab].file);
         const pdf = await loadingTask.promise;
+        
+        if (!isMounted) {
+          pdf.destroy();
+          return;
+        }
+        
         setPdfDocument(pdf);
+        currentPdf = pdf;
         setPageCount(pdf.numPages);
         setCurrentPage(1);
         
@@ -80,30 +105,32 @@ const Resumes = () => {
       } catch (error) {
         console.error('Error loading PDF:', error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
     
     loadPdf();
     
     return () => {
-      // Cleanup
-      if (pdfDocument) {
-        pdfDocument.destroy();
+      isMounted = false;
+      if (currentPdf) {
+        currentPdf.destroy();
       }
     };
-  }, [activeTab]);
+  }, [activeTab, resumes]);
   
   // Handle page navigation
   const goToPrevPage = async () => {
-    if (currentPage <= 1) return;
+    if (currentPage <= 1 || !pdfDocument) return;
     const newPage = currentPage - 1;
     setCurrentPage(newPage);
     await renderPdf(pdfDocument, newPage);
   };
   
   const goToNextPage = async () => {
-    if (currentPage >= pageCount) return;
+    if (currentPage >= pageCount || !pdfDocument) return;
     const newPage = currentPage + 1;
     setCurrentPage(newPage);
     await renderPdf(pdfDocument, newPage);
@@ -188,219 +215,184 @@ const Resumes = () => {
                   />
                 </div>
                 <div className="resume-details flex-grow-1">
-                  <h3 className="mb-3">{resumes[activeTab].title} Resume</h3>
-                  <p className="text-muted mb-4">{resumes[activeTab].description}</p>
-                  <div className="d-flex flex-wrap gap-3">
-                    <a
-                      href={resumes[activeTab].file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-primary"
-                      download
-                    >
-                      <FaDownload className="me-2" />
-                      Download PDF
-                    </a>
-                    <button
-                      onClick={() => {
-                        const modal = document.getElementById('resumeModal');
-                        modal.style.display = 'flex';
-                      }}
-                      className="btn btn-outline-primary"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Spinner as="span" animation="border" size="sm" className="me-2" />
-                          Loading...
-                        </>
-                      ) : (
-                        <>
-                          <FaExternalLinkAlt className="me-2" />
-                          View in Page
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
               </div>
-            </motion.div>
-          </Col>
-        </Row>
-      </Container>
-      
-      {/* PDF Viewer Modal */}
-      <div 
-        id="resumeModal" 
-        ref={modalRef}
-        style={{
-          display: 'none',
-          position: 'fixed',
-          zIndex: 1000,
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.9)',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px',
-          boxSizing: 'border-box'
-        }}
-      >
+            </div>
+          </motion.div>
+        </Col>
+      </Row>
+    </Container>
+    
+    {/* PDF Viewer Modal */}
+    <div 
+      id="resumeModal" 
+      ref={modalRef}
+      style={{
+        display: 'none',
+        position: 'fixed',
+        zIndex: 1000,
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.9)',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        boxSizing: 'border-box'
+      }}
+    >
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '900px',
+        maxHeight: '90vh',
+        backgroundColor: '#fff',
+        borderRadius: '8px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        {/* Header */}
         <div style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '900px',
-          maxHeight: '90vh',
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          overflow: 'hidden',
+          padding: '12px 16px',
+          backgroundColor: '#f8f9fa',
+          borderBottom: '1px solid #e9ecef',
           display: 'flex',
-          flexDirection: 'column'
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
-          {/* Header */}
-          <div style={{
-            padding: '12px 16px',
-            backgroundColor: '#f8f9fa',
-            borderBottom: '1px solid #e9ecef',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div style={{ fontWeight: 500 }}>
-              {resumes[activeTab]?.title || 'Resume'}
-            </div>
-            <div>
-              <button 
-                onClick={toggleFullscreen}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  marginRight: '8px',
-                  color: '#6c757d',
-                  borderRadius: '4px',
-                  transition: 'all 0.2s'
-                }}
-                title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-              >
-                <FaExpand />
-              </button>
-              <button 
-                onClick={() => {
-                  document.getElementById('resumeModal').style.display = 'none';
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  color: '#6c757d',
-                  borderRadius: '4px',
-                  transition: 'all 0.2s'
-                }}
-                title="Close"
-              >
-                <FaTimes />
-              </button>
-            </div>
+          <div style={{ fontWeight: 500 }}>
+            {resumes[activeTab]?.title || 'Resume'}
           </div>
-          
-          {/* PDF Canvas Container */}
-          <div style={{
-            flex: 1,
-            overflow: 'auto',
-            padding: '20px',
-            display: 'flex',
-            justifyContent: 'center',
-            backgroundColor: '#525659',
-            position: 'relative'
-          }}>
-            {isLoading ? (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                width: '100%'
-              }}>
-                <Spinner animation="border" variant="light" />
-              </div>
-            ) : (
-              <div style={{ position: 'relative' }}>
-                <canvas ref={canvasRef} />
-              </div>
-            )}
-          </div>
-          
-          {/* Footer */}
-          <div style={{
-            padding: '12px 16px',
-            backgroundColor: '#f8f9fa',
-            borderTop: '1px solid #e9ecef',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '10px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button 
-                onClick={goToPrevPage}
-                disabled={currentPage <= 1 || isLoading}
-                style={{
-                  padding: '4px 8px',
-                  border: '1px solid #dee2e6',
-                  background: '#fff',
-                  borderRadius: '4px',
-                  cursor: currentPage > 1 && !isLoading ? 'pointer' : 'not-allowed',
-                  opacity: currentPage > 1 && !isLoading ? 1 : 0.6
-                }}
-              >
-                <FaChevronLeft />
-              </button>
-              <span>
-                Page <span style={{ fontWeight: 500 }}>{currentPage}</span> of <span style={{ fontWeight: 500 }}>{pageCount}</span>
-              </span>
-              <button 
-                onClick={goToNextPage}
-                disabled={currentPage >= pageCount || isLoading}
-                style={{
-                  padding: '4px 8px',
-                  border: '1px solid #dee2e6',
-                  background: '#fff',
-                  borderRadius: '4px',
-                  cursor: currentPage < pageCount && !isLoading ? 'pointer' : 'not-allowed',
-                  opacity: currentPage < pageCount && !isLoading ? 1 : 0.6
-                }}
-              >
-                <FaChevronRight />
-              </button>
-            </div>
-            
-            <a
-              href={resumes[activeTab]?.file}
-              download
-              className="btn btn-sm btn-primary"
+          <div>
+            <button 
+              onClick={toggleFullscreen}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                textDecoration: 'none'
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                marginRight: '8px',
+                color: '#6c757d',
+                borderRadius: '4px',
+                transition: 'all 0.2s'
               }}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
             >
-              <FaDownload size={14} />
-              Download PDF
-            </a>
+              <FaExpand />
+            </button>
+            <button 
+              onClick={() => {
+                document.getElementById('resumeModal').style.display = 'none';
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                color: '#6c757d',
+                borderRadius: '4px',
+                transition: 'all 0.2s'
+              }}
+              title="Close"
+            >
+              <FaTimes />
+            </button>
           </div>
         </div>
+        
+        {/* PDF Canvas Container */}
+        <div style={{
+          flex: 1,
+          overflow: 'auto',
+          padding: '20px',
+          display: 'flex',
+          justifyContent: 'center',
+          backgroundColor: '#525659',
+          position: 'relative'
+        }}>
+          {isLoading ? (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%'
+            }}>
+              <Spinner animation="border" variant="light" />
+            </div>
+          ) : (
+            <div style={{ position: 'relative' }}>
+              <canvas ref={canvasRef} />
+            </div>
+          )}
+        </div>
+        
+        {/* Footer */}
+        <div style={{
+          padding: '12px 16px',
+          backgroundColor: '#f8f9fa',
+          borderTop: '1px solid #e9ecef',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '10px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button 
+              onClick={goToPrevPage}
+              disabled={currentPage <= 1 || isLoading}
+              style={{
+                padding: '4px 8px',
+                border: '1px solid #dee2e6',
+                background: '#fff',
+                borderRadius: '4px',
+                cursor: currentPage > 1 && !isLoading ? 'pointer' : 'not-allowed',
+                opacity: currentPage > 1 && !isLoading ? 1 : 0.6
+              }}
+            >
+              <FaChevronLeft />
+            </button>
+            <span>
+              Page <span style={{ fontWeight: 500 }}>{currentPage}</span> of <span style={{ fontWeight: 500 }}>{pageCount}</span>
+            </span>
+            <button 
+              onClick={goToNextPage}
+              disabled={currentPage >= pageCount || isLoading}
+              style={{
+                padding: '4px 8px',
+                border: '1px solid #dee2e6',
+                background: '#fff',
+                borderRadius: '4px',
+                cursor: currentPage < pageCount && !isLoading ? 'pointer' : 'not-allowed',
+                opacity: currentPage < pageCount && !isLoading ? 1 : 0.6
+              }}
+            >
+              <FaChevronRight />
+            </button>
+          </div>
+          
+          <a
+            href={getResumePath(resumes[activeTab]?.file)}
+            download={resumes[activeTab]?.file}
+            className="btn btn-sm btn-primary"
+            type="application/pdf"
+            style={{
+              textDecoration: 'none',
+              color: 'white',
+              marginRight: '10px'
+            }}
+          >
+            <FaDownload className="me-1" /> Download PDF
+          </a>
+        </div>
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 };
 
 export default Resumes;

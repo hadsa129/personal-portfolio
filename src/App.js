@@ -22,16 +22,10 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    let timer;
-    
-    // Fonction pour gérer le chargement
-    const handleLoad = () => {
-      timer = setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    };
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
 
-    // Fonction pour gérer le défilement
     const handleScroll = () => {
       const isScrolled = window.scrollY > 50;
       if (isScrolled !== scrolled) {
@@ -39,41 +33,15 @@ function App() {
       }
     };
 
-    // Vérifier si le contenu est déjà chargé
-    if (document.readyState === 'complete') {
-      handleLoad();
-    } else {
-      window.addEventListener('load', handleLoad);
-    }
-    
-    // Ajouter l'écouteur de défilement
     window.addEventListener('scroll', handleScroll);
-    
-    // Nettoyage
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('load', handleLoad);
       window.removeEventListener('scroll', handleScroll);
     };
   }, [scrolled]);
 
   if (loading) {
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#121212',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 9999
-      }}>
-        <Loader />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
