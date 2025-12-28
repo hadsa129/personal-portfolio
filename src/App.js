@@ -114,7 +114,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={
+          <Route path="/personal-portfolio" element={
             <>
               <ScrollToSection />
               <AppContent />

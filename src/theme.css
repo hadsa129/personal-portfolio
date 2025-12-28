@@ -1589,11 +1589,15 @@ a:hover {
 }
 
 .resume-preview-container {
-  background: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: white;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .resume-preview-container:hover {
@@ -1605,6 +1609,22 @@ a:hover {
   max-height: 500px;
   width: auto;
   border: 1px solid var(--border-color);
+}
+
+/* Style pour le bouton de téléchargement */
+.download-btn {
+  opacity: 1 !important;
+  transition: all 0.3s ease !important;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Assure que les boutons sont toujours visibles */
+.position-absolute.top-0.end-0 {
+  opacity: 1 !important;
 }
 
 .resume-details {

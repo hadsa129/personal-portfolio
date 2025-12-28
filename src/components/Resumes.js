@@ -309,7 +309,7 @@ const Resumes = () => {
                     </div>
                   )}
                   
-                  <div className="position-absolute top-0 end-0 p-3 d-flex">
+                  <div className="position-absolute top-0 end-0 p-3 d-flex" style={{ opacity: 1, transition: 'opacity 0.3s ease' }}>
                     <Button
                       variant="primary"
                       onClick={handlePreviewClick}
@@ -320,12 +320,19 @@ const Resumes = () => {
                       <FaExpand className="me-1" /> View
                     </Button>
                     <Button
-                      variant="outline-primary"
+                      variant="primary"
                       onClick={handleDownload}
                       size="sm"
                       title="Download PDF"
+                      className="download-btn"
+                      style={{
+                        backgroundColor: '#0d6efd',
+                        color: 'white',
+                        border: 'none',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                      }}
                     >
-                      <FaDownload className="me-1" /> Download
+                      <FaDownload className="me-1" /> Télécharger
                     </Button>
                   </div>
                 </div>
