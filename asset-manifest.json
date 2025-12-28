@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/personal-portfolio/static/css/main.cc4caf9a.css",
-    "main.js": "/personal-portfolio/static/js/main.938e6440.js",
+    "main.js": "/personal-portfolio/static/js/main.d0ecbeee.js",
     "static/js/685.5af8ace6.chunk.js": "/personal-portfolio/static/js/685.5af8ace6.chunk.js",
     "static/media/banner1.jpg": "/personal-portfolio/static/media/banner1.dc3f2735ac8195fb0d0a.jpg",
     "static/media/atb-logo.png": "/personal-portfolio/static/media/atb-logo.1188a4c5913f009d118d.png",
@@ -18,6 +18,6 @@
   },
   "entrypoints": [
     "static/css/main.cc4caf9a.css",
-    "static/js/main.938e6440.js"
+    "static/js/main.d0ecbeee.js"
   ]
 }
