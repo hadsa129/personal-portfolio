@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Tabs, Tab, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Container, Row, Col, Tabs, Tab, Spinner, Button } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { FaFilePdf, FaDownload, FaTimes, FaChevronLeft, FaChevronRight, FaExpand } from 'react-icons/fa';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -18,44 +18,44 @@ const Resumes = () => {
   const canvasRef = useRef(null);
   const modalRef = useRef(null);
 
-  const getResumePath = (filename) => {
-    // Use the public URL to ensure correct path in both dev and production
+  const getResumePath = useCallback((filename) => {
+    // Use the correct path for GitHub Pages
     return `${process.env.PUBLIC_URL}/resumes/${filename}`;
-  };
+  }, []);
 
-  const getPreviewPath = (previewPath) => {
-    // Handle preview images with fallback
-    try {
-      return require(`../public${previewPath}`);
-    } catch (e) {
-      // Fallback to a placeholder if the image doesn't exist
-      return `${process.env.PUBLIC_URL}/images/placeholder-resume.jpg`;
-    }
-  };
+  const getPreviewPath = useCallback((previewPath) => {
+    // Use direct path for production
+    return `${process.env.PUBLIC_URL}${previewPath}`;
+  }, []);
 
   const resumes = React.useMemo(() => ({
     dataScientist: {
+      id: 'dataScientist',
       title: 'Data Scientist',
       file: 'data_scientist_resume.pdf',
-      preview: getPreviewPath('/images/resumes/data_scientist_preview.png'),
+      preview: '/images/resumes/data_scientist_preview.png',
       description: 'Expertise in machine learning, deep learning, and statistical modeling. Proficient in Python, TensorFlow, and data visualization.'
     },
     dataEngineer: {
+      id: 'dataEngineer',
       title: 'Data Engineer',
       file: 'data_engineer_resume.pdf',
-      preview: getPreviewPath('/images/resumes/data_engineer_preview.png'),
+      preview: '/images/resumes/data_engineer_preview.png',
       description: 'Specialized in building scalable data pipelines, ETL processes, and data infrastructure using tools like Spark, Airflow, and cloud platforms.'
     },
     dataAnalyst: {
+      id: 'dataAnalyst',
       title: 'Data Analyst',
       file: 'data_analyst_role.pdf',
-      preview: getPreviewPath('/images/resumes/data_analyst_preview.png'),
+      preview: '/images/resumes/data_analyst_preview.png',
       description: 'Skilled in data visualization, business intelligence, and data-driven decision making. Proficient in SQL, Tableau, and statistical analysis.'
     }
-  }), []); // Added empty dependency array since getPreviewPath is stable
+  }), []);
 
   // Function to render PDF page
-  const renderPdf = async (pdfDoc, pageNum) => {
+  const renderPdf = useCallback(async (pdfDoc, pageNum) => {
+    if (!pdfDoc || !canvasRef.current) return;
+    
     try {
       const page = await pdfDoc.getPage(pageNum);
       const viewport = page.getViewport({ scale: 1.5 });
@@ -66,6 +66,9 @@ const Resumes = () => {
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       
+      // Clear previous content
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      
       // Render PDF page
       await page.render({
         canvasContext: context,
@@ -73,8 +76,9 @@ const Resumes = () => {
       }).promise;
     } catch (error) {
       console.error('Error rendering PDF:', error);
+      // Show error state to user
     }
-  };
+  }, []);
 
   // Load PDF when active tab changes
   useEffect(() => {
@@ -86,7 +90,18 @@ const Resumes = () => {
       
       setIsLoading(true);
       try {
-        const loadingTask = pdfjsLib.getDocument(resumes[activeTab].file);
+        const resume = resumes[activeTab];
+        const resumeUrl = getResumePath(resume.file);
+        
+        // Show preview image while loading
+        setPdfDocument(null);
+        
+        const loadingTask = pdfjsLib.getDocument({
+          url: resumeUrl,
+          cMapUrl: `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
+          cMapPacked: true,
+        });
+        
         const pdf = await loadingTask.promise;
         
         if (!isMounted) {
@@ -119,8 +134,60 @@ const Resumes = () => {
         currentPdf.destroy();
       }
     };
-  }, [activeTab, resumes]); // Added resumes to the dependency array
-  
+  }, [activeTab, resumes]);
+
+  // Handle download
+  const handleDownload = useCallback(() => {
+    const resume = resumes[activeTab];
+    if (!resume) return;
+    
+    try {
+      const link = document.createElement('a');
+      link.href = getResumePath(resume.file);
+      link.download = resume.file;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+    }
+  }, [activeTab, resumes, getResumePath]);
+
+  // Handle preview click
+  const handlePreviewClick = useCallback(() => {
+    const resume = resumes[activeTab];
+    if (!resume) return;
+    
+    try {
+      // Open PDF in a new tab
+      window.open(getResumePath(resume.file), '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Error opening resume preview:', error);
+    }
+  }, [activeTab, resumes, getResumePath]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (pdfDocument) {
+        try {
+          pdfDocument.destroy();
+        } catch (error) {
+          console.error('Error cleaning up PDF document:', error);
+        }
+      }
+    };
+  }, [pdfDocument]);
+
+  // Handle tab change
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
+    // Reset to first page when changing tabs
+    setCurrentPage(1);
+  }, []);
+
   // Handle page navigation
   const goToPrevPage = async () => {
     if (currentPage <= 1 || !pdfDocument) return;
@@ -136,17 +203,32 @@ const Resumes = () => {
     await renderPdf(pdfDocument, newPage);
   };
   
-  // Toggle fullscreen
-  const toggleFullscreen = () => {
+  // Toggle fullscreen mode
+  const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      modalRef.current.requestFullscreen().catch(err => {
+      modalRef.current?.requestFullscreen?.().catch(err => {
         console.error(`Error attempting to enable fullscreen: ${err.message}`);
       });
+      setIsFullscreen(true);
     } else {
-      document.exitFullscreen();
+      document.exitFullscreen?.();
+      setIsFullscreen(false);
     }
-  };
+  }, []);
+
+  // Handle page navigation
+  const goToPage = useCallback((page) => {
+    if (page < 1 || page > pageCount) return;
+    setCurrentPage(page);
+  }, [pageCount]);
   
+  // Update PDF view when page changes
+  useEffect(() => {
+    if (pdfDocument && currentPage >= 1 && currentPage <= pageCount) {
+      renderPdf(pdfDocument, currentPage);
+    }
+  }, [currentPage, pdfDocument, renderPdf]);
+
   // Handle fullscreen change
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -160,239 +242,108 @@ const Resumes = () => {
   }, []);
 
   return (
-    <section id="resumes" className="py-5 bg-light">
+    <section id="resumes" className="py-5">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
           className="text-center mb-5"
         >
-          <h2 className="section-title">My Resumes</h2>
-          <p className="text-muted">Select a profile to view and download the corresponding resume</p>
+          <h2 className="section-title display-5 fw-bold mb-3">My Resumes</h2>
+          <p className="text-muted lead">View or download my professional resumes</p>
         </motion.div>
+
+        <Tabs
+          activeKey={activeTab}
+          onSelect={handleTabChange}
+          className="mb-4 justify-content-center"
+          variant="pills"
+        >
+          {Object.values(resumes).map((resume) => (
+            <Tab
+              key={resume.id}
+              eventKey={resume.id}
+              title={resume.title}
+              className="nav-link"
+            />
+          ))}
+        </Tabs>
 
         <Row className="justify-content-center">
           <Col lg={10}>
-            <Tabs
-              activeKey={activeTab}
-              onSelect={(k) => setActiveTab(k)}
-              className="mb-4 justify-content-center"
-              variant="pills"
-            >
-              {Object.entries(resumes).map(([key, resume]) => (
-                <Tab
-                  key={key}
-                  eventKey={key}
-                  title={
-                    <div className="d-flex align-items-center">
-                      <FaFilePdf className="me-2" />
-                      {resume.title}
-                    </div>
-                  }
-                />
-              ))}
-            </Tabs>
-
-            <motion.div
-              key={activeTab}
+            <motion.div 
+              className="resume-preview-container"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="resume-preview-container bg-white p-4 rounded-4 shadow-sm"
             >
-              <div className="d-flex flex-column flex-md-row">
-                <div className="resume-preview me-md-4 mb-4 mb-md-0">
-                  <img
-                    src={resumes[activeTab].preview}
-                    alt={`${resumes[activeTab].title} Resume Preview`}
-                    className="img-fluid rounded-3 shadow-sm"
-                    style={{ border: '1px solid #eee' }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300x400/1a1a1a/D4BC9E?text=Resume+Preview';
-                    }}
-                  />
+              {isLoading ? (
+                <div className="d-flex justify-content-center align-items-center" style={{ height: '500px' }}>
+                  <Spinner animation="border" variant="primary" />
+                  <span className="ms-2">Loading resume...</span>
                 </div>
-                <div className="resume-details flex-grow-1">
+              ) : (
+                <div className="position-relative">
+                  {resumes[activeTab]?.preview ? (
+                    <img
+                      src={getPreviewPath(resumes[activeTab].preview)}
+                      alt={`${resumes[activeTab]?.title} Preview`}
+                      className="img-fluid w-100"
+                      style={{ 
+                        cursor: 'pointer',
+                        maxHeight: '500px',
+                        objectFit: 'contain',
+                        backgroundColor: '#f8f9fa',
+                        padding: '1rem'
+                      }}
+                      onClick={handlePreviewClick}
+                    />
+                  ) : (
+                    <div className="d-flex justify-content-center align-items-center" style={{ height: '500px', backgroundColor: '#f8f9fa' }}>
+                      <div className="text-center">
+                        <FaFilePdf size={48} className="text-muted mb-3" />
+                        <p className="mb-0">No preview available</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="position-absolute top-0 end-0 p-3 d-flex">
+                    <Button
+                      variant="primary"
+                      onClick={handlePreviewClick}
+                      className="me-2"
+                      size="sm"
+                      title="View Fullscreen"
+                    >
+                      <FaExpand className="me-1" /> View
+                    </Button>
+                    <Button
+                      variant="outline-primary"
+                      onClick={handleDownload}
+                      size="sm"
+                      title="Download PDF"
+                    >
+                      <FaDownload className="me-1" /> Download
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 p-3">
+                <h4 className="mb-3">{resumes[activeTab]?.title}</h4>
+                <p className="mb-0">{resumes[activeTab]?.description}</p>
               </div>
-            </div>
-          </motion.div>
-        </Col>
-      </Row>
-    </Container>
-    
-    {/* PDF Viewer Modal */}
-    <div 
-      id="resumeModal" 
-      ref={modalRef}
-      style={{
-        display: 'none',
-        position: 'fixed',
-        zIndex: 1000,
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.9)',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        boxSizing: 'border-box'
-      }}
-    >
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '900px',
-        maxHeight: '90vh',
-        backgroundColor: '#fff',
-        borderRadius: '8px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <div style={{
-          padding: '12px 16px',
-          backgroundColor: '#f8f9fa',
-          borderBottom: '1px solid #e9ecef',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div style={{ fontWeight: 500 }}>
-            {resumes[activeTab]?.title || 'Resume'}
-          </div>
-          <div>
-            <button 
-              onClick={toggleFullscreen}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '4px 8px',
-                marginRight: '8px',
-                color: '#6c757d',
-                borderRadius: '4px',
-                transition: 'all 0.2s'
-              }}
-              title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            >
-              <FaExpand />
-            </button>
-            <button 
-              onClick={() => {
-                document.getElementById('resumeModal').style.display = 'none';
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '4px 8px',
-                color: '#6c757d',
-                borderRadius: '4px',
-                transition: 'all 0.2s'
-              }}
-              title="Close"
-            >
-              <FaTimes />
-            </button>
-          </div>
-        </div>
-        
-        {/* PDF Canvas Container */}
-        <div style={{
-          flex: 1,
-          overflow: 'auto',
-          padding: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          backgroundColor: '#525659',
-          position: 'relative'
-        }}>
-          {isLoading ? (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              width: '100%'
-            }}>
-              <Spinner animation="border" variant="light" />
-            </div>
-          ) : (
-            <div style={{ position: 'relative' }}>
-              <canvas ref={canvasRef} />
-            </div>
-          )}
-        </div>
-        
-        {/* Footer */}
-        <div style={{
-          padding: '12px 16px',
-          backgroundColor: '#f8f9fa',
-          borderTop: '1px solid #e9ecef',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button 
-              onClick={goToPrevPage}
-              disabled={currentPage <= 1 || isLoading}
-              style={{
-                padding: '4px 8px',
-                border: '1px solid #dee2e6',
-                background: '#fff',
-                borderRadius: '4px',
-                cursor: currentPage > 1 && !isLoading ? 'pointer' : 'not-allowed',
-                opacity: currentPage > 1 && !isLoading ? 1 : 0.6
-              }}
-            >
-              <FaChevronLeft />
-            </button>
-            <span>
-              Page <span style={{ fontWeight: 500 }}>{currentPage}</span> of <span style={{ fontWeight: 500 }}>{pageCount}</span>
-            </span>
-            <button 
-              onClick={goToNextPage}
-              disabled={currentPage >= pageCount || isLoading}
-              style={{
-                padding: '4px 8px',
-                border: '1px solid #dee2e6',
-                background: '#fff',
-                borderRadius: '4px',
-                cursor: currentPage < pageCount && !isLoading ? 'pointer' : 'not-allowed',
-                opacity: currentPage < pageCount && !isLoading ? 1 : 0.6
-              }}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+            </motion.div>
+          </Col>
+        </Row>
+      </Container>
+
           
-          <a
-            href={getResumePath(resumes[activeTab]?.file)}
-            download={resumes[activeTab]?.file}
-            className="btn btn-sm btn-primary"
-            type="application/pdf"
-            style={{
-              textDecoration: 'none',
-              color: 'white',
-              marginRight: '10px'
-            }}
-          >
-            <FaDownload className="me-1" /> Download PDF
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-);
+     
+    </section>
+  );
 };
 
 export default Resumes;

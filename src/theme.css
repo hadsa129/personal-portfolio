@@ -812,20 +812,9 @@ a:hover {
 
 .resume-image {
   position: relative;
-  height: 300px;
-  overflow: hidden;
-  background: var(--bg-darker);
-}
-
-.resume-image img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.resume-card:hover .resume-image img {
-  transform: scale(1.05);
+  max-width: 100%;
+  height: auto;
 }
 
 .resume-overlay {
@@ -1595,14 +1584,16 @@ a:hover {
 
 /* Resumes Section */
 #resumes {
-  background: var(--bg-darker);
+  background: var(--dark-bg);
   padding: 6rem 0;
 }
 
 .resume-preview-container {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .resume-preview-container:hover {

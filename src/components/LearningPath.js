@@ -1,24 +1,23 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
+import { 
+  FaChartLine, 
+  FaChevronDown,
+  FaChevronUp,
+  FaPython,
+  FaProjectDiagram as FaDeploy
+} from 'react-icons/fa';
+import { 
+  SiPytorch,
+  SiTensorflow
+} from 'react-icons/si';
 import { motion } from 'framer-motion';
-import Icons from '../utils/iconImports';
 import './LearningPath.css';
 import RoadmapGif from './RoadmapGif';
-
-const {
-  FaChartLine, 
-  FaChevronDown, 
-  FaChevronUp, 
-  FaPython, 
-  FaProjectDiagram,
-  SiPytorch, 
-  SiTensorflow
-} = Icons;
-
-const FaDeploy = FaProjectDiagram;
 
 const LearningPath = () => {
   const [activeKey, setActiveKey] = useState('0');

@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import { Container } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaChevronRight, FaChartLine } from "react-icons/fa";
-import { SiPython, SiDjango, SiDocker, SiOpencv, SiGoogle } from "react-icons/si";
-import { FaBrain } from "react-icons/fa";  // Alternative à SiHuggingface
+import { SiPython, SiDjango, SiDocker, SiOpencv, SiHuggingface, SiGoogle } from "react-icons/si";
 import orangeLogo from "../assets/img/orange-logo.png";
 import atbLogo from "../assets/img/atb-logo.png";
 import artiLogo from "../assets/img/addminn-logo.webp";
@@ -68,7 +67,7 @@ const ExperienceCard = ({ experience, index }) => {
       'Power BI': <SiPowerbi className="me-1" />,
       'OpenCV': <SiOpencv className="me-1" />,
       'Tesseract': <SiGoogle className="me-1" />,
-      'LLMs': <FaBrain className="me-1" />
+      'LLMs': <SiHuggingface className="me-1" />
     };
     return icons[tech] || <FaChevronRight className="me-1" size={10} />;
   };

@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { FaPython, FaGithub,  FaDocker,  FaAws } from 'react-icons/fa';
-import { SiApachespark, SiDatabricks, SiApachekafka, SiSnowflake, SiTableau, SiTensorflow, SiPytorch, SiFastapi, SiDjango, SiPostgresql, SiMongodb, SiMysql } from 'react-icons/si';
-import { FaBrain } from 'react-icons/fa';  // Alternative à SiHuggingface
+import { SiApachespark, SiDatabricks, SiApachekafka, SiSnowflake, SiTableau, SiTensorflow, SiPytorch, SiHuggingface, SiFastapi, SiDjango, SiPostgresql, SiMongodb, SiMysql } from 'react-icons/si';
 import { DiScrum } from 'react-icons/di';
 
 const skillsData = [
@@ -30,7 +29,7 @@ const skillsData = [
     items: [
       { name: 'TensorFlow', level: 85, icon: <SiTensorflow /> },
       { name: 'PyTorch', level: 80, icon: <SiPytorch /> },
-      { name: 'Hugging Face', level: 85, icon: <FaBrain /> },
+      { name: 'Hugging Face', level: 85, icon: <SiHuggingface /> },
       { name: 'LangChain', level: 80, icon: <i className="fas fa-link"></i> },
       { name: 'RAG', level: 85, icon: <i className="fas fa-robot"></i> },
     ]
