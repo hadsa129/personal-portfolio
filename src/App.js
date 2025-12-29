@@ -1,6 +1,6 @@
 // src/App.js
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useParams } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import './theme.css';
 import Navbar from './components/NavBar';
@@ -111,7 +111,7 @@ function App() {
   }
 
   return (
-    <Router basename="/personal-portfolio">
+    <HashRouter>
       <div className="App">
         <Routes>
           <Route path="/" element={
@@ -128,7 +128,7 @@ function App() {
           } />
         </Routes>
       </div>
-    </Router>
+    </HashRouter>
   );
 }
 
